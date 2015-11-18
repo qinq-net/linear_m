@@ -23,7 +23,7 @@
 ##       Filename:  linear_m.py
 ##    Description:  Perform a simple linear regression from stdin
 ##                  Input x axis first, then y axis
-##        Version:  1.1
+##        Version:  1.2
 ##        Created:  10/14/2015
 ##
 ##         Arthor:  Meng Ziyuan (14191050)
@@ -34,6 +34,14 @@
 ##====================================================================##
 
 import math
+import sys
+from getopt import getopt
+opts,args=getopt(sys.argv[1:],'',['err='])
+for o,a in opts:
+    if o == '--err':
+        err = float(a)
+        break
+else: err=None
 
 def get_table():## Input all in a line from stdin
     # print('input x table first.')
@@ -77,9 +85,11 @@ r=r_sum1/r_sum2
 print('PPMCC r='+str(r))
 
 # measurement of standard error for y
-s_sum=sum([(y[i]-(a+b*x[i]))*(y[i]-(a+b*x[i])) for i in range(n)])
+if err: s_sum = err
+else: s_sum=math.sqrt(sum([(y[i]-(a+b*x[i]))**2/(n-2) for i in range(n)]))
+print('Standard Error of y: s(y)='+str(s_sum))
 print('Uncertainties of the coefficients:')
-uab=b*math.sqrt((1/(r*r)-1)/(n-2))
-print("ua(b)="+str(uab))
-uaa=math.sqrt(sum_x2/n)*uab
+ua_b=math.sqrt(s_sum*s_sum/(sum_x2-sum(x)**2/n))
+print("ua(b)="+str(ua_b))
+uaa=math.sqrt(sum_x2/n)*ua_b
 print("ua(a)="+str(uaa))
