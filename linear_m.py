@@ -23,8 +23,8 @@
 ##       Filename:  linear_m.py
 ##    Description:  Perform a simple linear regression from stdin
 ##                  Input x axis first, then y axis
-##        Version:  1.2
-##        Created:  10/14/2015
+##        Version:  1.3
+##        Created:  11/25/2015
 ##
 ##         Arthor:  Meng Ziyuan (14191050)
 ##                  Qin Yuhao   (14191033)
@@ -35,13 +35,28 @@
 
 import math
 import sys
+modes=['linear','square']
+submodes=['both','x','y']
 from getopt import getopt
-opts,args=getopt(sys.argv[1:],'',['err='])
-for o,a in opts:
-    if o == '--err':
-        err = float(a)
-        break
+opts,args=getopt(sys.argv[1:],'',['err=','mode=','submode='])
+#for o,a in opts:
+#    if o == '--err':
+#        err = float(a)
+#        break
+#else: err=None
+o,a = [],[]
+for oi,ai in opts:
+    o.append(oi)
+    a.append(ai)
+#print(o,a)
+if '--err' in o: err = float(a[o.index('--err')])
 else: err=None
+if '--mode' in o: mode = str(a[o.index('--mode')]).lower()
+else: mode=None
+if mode not in modes: mode = 'linear'
+if '--submode' in o: submode = str(a[o.index('--submode')]).lower()
+else: submode=None
+if submode not in submodes: submode = 'both'
 
 def get_table():## Input all in a line from stdin
     # print('input x table first.')
@@ -61,6 +76,10 @@ def get_table():## Input all in a line from stdin
     if len(x) != len(y): raise TypeError('items not matched')
     return x, y, len(x)
 x,y,n = get_table()
+
+if mode=='square':
+    if submode != 'y': x=[math.pow(i,2) for i in x]
+    if submode != 'x': y=[math.pow(i,2) for i in y]
 
 print("x="+str(x))
 print("y="+str(y))
